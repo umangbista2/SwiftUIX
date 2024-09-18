@@ -6,6 +6,7 @@ import Combine
 import Swift
 import SwiftUI
 
+@MainActor
 public protocol _opaque_View {
     func _opaque_environmentObject<B: ObservableObject>(_: B) -> _opaque_View
     func _opaque_getViewName() -> AnyHashable?

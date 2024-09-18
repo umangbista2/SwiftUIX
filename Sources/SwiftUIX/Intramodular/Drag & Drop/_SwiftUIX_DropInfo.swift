@@ -13,9 +13,11 @@ public protocol _SwiftUI_DropInfoProtocol {
     var location: CGPoint { get }
     
     @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+    @MainActor
     func hasItemsConforming(to contentTypes: [UTType]) -> Bool
     
     @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+    @MainActor
     func itemProviders(for contentTypes: [UTType]) -> [NSItemProvider]
 }
 
@@ -23,16 +25,19 @@ public protocol _SwiftUI_DropInfoProtocol {
 @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 @_documentation(visibility: internal)
 public struct _SwiftUIX_DropInfo: _SwiftUI_DropInfoProtocol {
+    @MainActor
     public let location: CGPoint
     
     fileprivate let draggingInfo: NSDraggingInfo
     
+    @MainActor
     package init(draggingInfo: NSDraggingInfo, in view: NSView) {
         self.draggingInfo = draggingInfo
         self.location = draggingInfo.draggingLocation
     }
     
     @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+    @MainActor
     public func hasItemsConforming(to contentTypes: [UTType]) -> Bool {
         return draggingInfo.draggingPasteboard.canReadObject(forClasses: [NSURL.self], options: nil)
     }

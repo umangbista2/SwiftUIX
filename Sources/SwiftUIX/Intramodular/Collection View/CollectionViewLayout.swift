@@ -9,7 +9,7 @@ import SwiftUI
 #if os(iOS) || os(macOS) || os(tvOS) || targetEnvironment(macCatalyst)
 
 /// A set of properties for determining whether to recompute the size of items or their position in the layout.
-public protocol CollectionViewLayout {
+public protocol CollectionViewLayout: Sendable {
     var hashValue: Int { get }
     
     #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
@@ -29,8 +29,9 @@ extension View {
 
 // MARK: - Auxiliary
 
+// FIXME: Added nonisolated(unsafe)
 private struct _CollectionViewLayoutEnvironmentKey: EnvironmentKey {
-    static let defaultValue: CollectionViewLayout = FlowCollectionViewLayout()
+    nonisolated(unsafe) static let defaultValue: CollectionViewLayout = FlowCollectionViewLayout()
 }
 
 extension EnvironmentValues {

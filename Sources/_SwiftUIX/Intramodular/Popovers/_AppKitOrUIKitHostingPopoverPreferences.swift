@@ -22,7 +22,8 @@ extension _AppKitOrUIKitHostingPopoverPreferences {
     public struct _PreferenceKey: SwiftUI.PreferenceKey {
         public typealias Value = _AppKitOrUIKitHostingPopoverPreferences
         
-        public static var defaultValue: Value = nil
+        // FIXME: Not sure why this is getting flagged
+        nonisolated(unsafe) public static var defaultValue: Value = nil
         
         public static func reduce(
             value: inout Value,

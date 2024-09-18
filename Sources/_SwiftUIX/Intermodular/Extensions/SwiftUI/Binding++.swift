@@ -22,7 +22,7 @@ extension Binding {
 }
 
 extension Binding {
-    public func conditionalCast<T, U>(
+    public func conditionalCast<T: Sendable, U: Sendable>(
         to: U.Type = U.self
     ) -> Binding<Optional<U>> where Value == Optional<T> {
         Binding<Optional<U>>(
@@ -34,7 +34,9 @@ extension Binding {
             }
         )
     }
-    
+}
+
+extension Binding where Value: Sendable {
     public func _conditionalCast<T>(
         to type: T.Type = T.self
     ) -> Binding<Optional<T>> {
@@ -56,7 +58,7 @@ extension Binding {
     
     public func _conditionalCast<T>(
         to type: T.Type = T.self,
-        defaultValue: @escaping () -> T
+        defaultValue: @Sendable @escaping () -> T
     ) -> Binding<T> {
         Binding<T>(
             get: {
@@ -88,7 +90,7 @@ extension Binding {
         )
     }
     
-    public func _conditionallyCast<T>(
+    public func _conditionallyCast<T: Sendable>(
         as type: T.Type
     ) -> Binding<T>? {
         guard let currentValue = self.wrappedValue as? T else {
@@ -114,10 +116,8 @@ extension Binding {
             }
         )
     }
-}
-
-extension Binding {
-    public func map<T>(
+    
+    public func map<T: Sendable>(
         _ keyPath: WritableKeyPath<Value, T>
     ) -> Binding<T> {
         Binding<T>(
@@ -126,19 +126,26 @@ extension Binding {
         )
     }
     
-    public func _map<T>(
-        _ transform: @escaping (Value) -> T,
-        _ reverse : @escaping (T) -> Value
+    public func _map<T: Sendable>(
+        _ transform: @Sendable @escaping (Value) -> T,
+        _ reverse : @Sendable @escaping (T) -> Value
     ) -> Binding<T> {
         Binding<T>(
             get: { transform(self.wrappedValue) },
             set: { wrappedValue = reverse($0) }
         )
     }
+}
+
+// FIXME: WriteableKeyPath, not sure how to fix Sendable errors - adding @unchecked Sendable right now
+extension WritableKeyPath: @unchecked Sendable where Root: Sendable, Value: Sendable {
     
-    public func _map<T, U>(
-        _ transform: @escaping (T) -> U,
-        _ reverse : @escaping (U) -> T
+}
+
+extension Binding {
+    public func _map<T: Sendable, U>(
+        _ transform: @Sendable @escaping (T) -> U,
+        _ reverse : @Sendable @escaping (U) -> T
     ) -> Binding<U?> where Value == Optional<T> {
         Binding<U?>(
             get: { self.wrappedValue.map(transform) },
@@ -147,19 +154,21 @@ extension Binding {
     }
 }
 
-extension Binding {
+extension Binding where Value: Sendable {
     public func onSet(
-        perform body: @escaping (Value) -> ()
+        perform body: @Sendable @escaping (Value) -> ()
     ) -> Self {
         return .init(
             get: { self.wrappedValue },
             set: { self.wrappedValue = $0; body($0) }
         )
     }
-    
+}
+
+extension Binding {
     public func onChange(
-        perform action: @escaping (Value) -> ()
-    ) -> Self where Value: Equatable {
+        perform action: @Sendable @escaping (Value) -> ()
+    ) -> Self where Value: Equatable, Value: Sendable {
         return .init(
             get: {
                 self.wrappedValue
@@ -178,7 +187,7 @@ extension Binding {
     
     public func onChange(
         toggle value: Binding<Bool>
-    ) -> Self where Value: Equatable {
+    ) -> Self where Value: Equatable, Value: Sendable {
         onChange { _ in
             value.wrappedValue.toggle()
         }
@@ -186,11 +195,11 @@ extension Binding {
     
     public func mirror(
         to other: Binding<Value>
-    ) -> Binding<Value> {
+    ) -> Binding<Value> where Value: Sendable {
         onSet(perform: { other.wrappedValue = $0 })
     }
     
-    public func printOnSet() -> Self {
+    public func printOnSet() -> Self where Value: Sendable {
         onSet {
             print("Set value: \($0)")
         }
@@ -198,7 +207,7 @@ extension Binding {
 }
 
 extension Binding {
-    public func _asOptional(defaultValue: Value) -> Binding<Optional<Value>> {
+    public func _asOptional(defaultValue: Value) -> Binding<Optional<Value>> where Value: Sendable {
         Binding<Optional<Value>>(
             get: {
                 self.wrappedValue
@@ -209,7 +218,7 @@ extension Binding {
         )
     }
     
-    public func _asOptional(defaultValue: Value) -> Binding<Optional<Value>> where Value: Equatable {
+    public func _asOptional(defaultValue: Value) -> Binding<Optional<Value>> where Value: Equatable, Value: Sendable {
         Binding<Optional<Value>>(
             get: {
                 self.wrappedValue
@@ -224,7 +233,7 @@ extension Binding {
         )
     }
     
-    public func _asOptional() -> Binding<Optional<Value>> {
+    public func _asOptional() -> Binding<Optional<Value>> where Value: Sendable {
         Binding<Optional<Value>>(
             get: {
                 self.wrappedValue
@@ -235,14 +244,14 @@ extension Binding {
         )
     }
     
-    public func withDefaultValue<T>(_ defaultValue: T) -> Binding<T> where Value == Optional<T> {
+    public func withDefaultValue<T: Sendable>(_ defaultValue: T) -> Binding<T> where Value == Optional<T> {
         Binding<T>(
             get: { self.wrappedValue ?? defaultValue },
             set: { self.wrappedValue = $0 }
         )
     }
     
-    public func withDefaultValue<T: Equatable>(
+    public func withDefaultValue<T: Equatable & Sendable>(
         _ defaultValue: T
     ) -> Binding<T> where Value == Optional<T> {
         Binding<T>(
@@ -256,14 +265,14 @@ extension Binding {
         .removeDuplicates()
     }
     
-    public func forceUnwrap<T>() -> Binding<T> where Value == Optional<T> {
+    public func forceUnwrap<T: Sendable>() -> Binding<T> where Value == Optional<T> {
         .init(
             get: { self.wrappedValue! },
             set: { self.wrappedValue = $0 }
         )
     }
     
-    public func isNil<Wrapped>() -> Binding<Bool> where Optional<Wrapped> == Value {
+    public func isNil<Wrapped: Sendable>() -> Binding<Bool> where Optional<Wrapped> == Value {
         .init(
             get: { self.wrappedValue == nil },
             set: { isNil in
@@ -272,7 +281,7 @@ extension Binding {
         )
     }
     
-    public func isNotNil<Wrapped>() -> Binding<Bool> where Optional<Wrapped> == Value {
+    public func isNotNil<Wrapped: Sendable>() -> Binding<Bool> where Optional<Wrapped> == Value {
         .init(
             get: { self.wrappedValue != nil },
             set: { isNotNil in
@@ -281,8 +290,8 @@ extension Binding {
         )
     }
     
-    public func isNotNil<Wrapped>(
-        default defaultValue: @escaping @autoclosure () -> Wrapped
+    public func isNotNil<Wrapped: Sendable>(
+        default defaultValue: @Sendable @escaping @autoclosure () -> Wrapped
     ) -> Binding<Bool> where Optional<Wrapped> == Value {
         .init(
             get: {
@@ -298,7 +307,7 @@ extension Binding {
         )
     }
     
-    public func nilIfEmpty<T: Collection>() -> Binding where Value == Optional<T> {
+    public func nilIfEmpty<T: Collection & Sendable>() -> Binding where Value == Optional<T> {
         Binding(
             get: {
                 guard let wrappedValue = self.wrappedValue, !wrappedValue.isEmpty else {
@@ -319,7 +328,7 @@ extension Binding {
     
     public static func unwrapping(
         _ other: Binding<Value?>
-    ) -> Self? {
+    ) -> Self? where Value: Sendable {
         guard let wrappedValue = other.wrappedValue else {
             return nil
         }
@@ -349,7 +358,7 @@ extension Binding {
     /// Creates a `Binding<Bool>` that reports whether `binding.wrappedValue` equals a given value.
     ///
     /// `binding.wrappedValue` will be set to `nil` only if `binding.wrappedValue` is equal to the given value and the `Boolean` value being set is `false.`
-    public static func boolean<T: Equatable>(
+    public static func boolean<T: Equatable & Sendable>(
         _ binding: Binding<T?>,
         equals value: T?
     ) -> Binding<Bool> where Value == Bool {
@@ -372,7 +381,7 @@ extension Binding {
     /// Creates a `Binding<Bool>` that reports whether `binding.wrappedValue` equals a given value.
     ///
     /// `binding.wrappedValue` will be set to `nil` only if `binding.wrappedValue` is equal to the given value and the `Boolean` value being set is `false.`
-    public static func boolean<T: Equatable>(
+    public static func boolean<T: Equatable & Sendable>(
         _ binding: Binding<T?>,
         equals value: T
     ) -> Binding<Bool> where Value == Bool {
@@ -395,7 +404,7 @@ extension Binding {
     /// Creates a `Binding<Bool>` that reports whether `binding.wrappedValue` equals a given value.
     ///
     /// `binding.wrappedValue` will be set to `nil` only if `binding.wrappedValue` is equal to the given value and the `Boolean` value being set is `false.`
-    public static func boolean<T: AnyObject>(
+    public static func boolean<T: AnyObject & Sendable>(
         _ binding: Binding<T?>,
         equals value: T
     ) -> Binding<Bool> where Value == Bool {
@@ -418,7 +427,7 @@ extension Binding {
     /// Creates a `Binding<Bool>` that reports whether `binding.wrappedValue` equals a given value.
     ///
     /// `binding.wrappedValue` will be set to `nil` only if `binding.wrappedValue` is equal to the given value and the `Boolean` value being set is `false.`
-    public static func boolean<T: AnyObject & Equatable>(
+    public static func boolean<T: AnyObject & Equatable & Sendable>(
         _ binding: Binding<T?>,
         equals value: T
     ) -> Binding<Bool> where Value == Bool {
@@ -441,7 +450,7 @@ extension Binding {
     /// Creates a `Binding<Bool>` that reports whether `binding.wrappedValue` equals a given value.
     ///
     /// `binding.wrappedValue` will be set to `nil` only if `binding.wrappedValue` is equal to the given value and the `Boolean` value being set is `false.`
-    public static func boolean<T: Equatable>(
+    public static func boolean<T: Equatable & Sendable>(
         _ binding: Binding<T>,
         equals value: T,
         default defaultValue: T
@@ -462,7 +471,7 @@ extension Binding {
         )
     }
     
-    public static func boolean<T: Hashable>(
+    public static func boolean<T: Hashable & Sendable>(
         _ binding: Binding<Set<T>>,
         contains value: T
     ) -> Binding<Bool> {
@@ -480,7 +489,7 @@ extension Binding {
         )
     }
     
-    public static func boolean<T: Hashable>(
+    public static func boolean<T: Hashable & Sendable>(
         _ binding: Binding<Set<T>>,
         equals value: T
     ) -> Binding<Bool> {
@@ -500,7 +509,7 @@ extension Binding {
 }
 
 extension Binding {
-    public func removeDuplicates() -> Self where Value: Equatable {
+    public func removeDuplicates() -> Self where Value: Equatable & Sendable {
         return .init(
             get: { self.wrappedValue },
             set: { newValue in

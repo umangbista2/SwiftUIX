@@ -8,7 +8,7 @@ import SwiftUI
 
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct ThrottledDelayedState<Value>: DynamicProperty {
+public struct ThrottledDelayedState<Value: Sendable>: DynamicProperty, Sendable {
     let delay: DispatchTimeInterval?
     
     @State private var _wrappedValue: Value
@@ -69,7 +69,7 @@ public struct ThrottledDelayedState<Value>: DynamicProperty {
 
 // MARK: - Helpers
 
-private class MutableDispatchWorkItem {
+private class MutableDispatchWorkItem: @unchecked Sendable {
     var base: DispatchWorkItem
     
     init() {

@@ -8,7 +8,7 @@ import AppKit
 import SwiftUI
 
 extension NSView {
-    public struct AnimationOptions: OptionSet {
+    public struct AnimationOptions: OptionSet, Sendable {
         public static let curveEaseInOut = AnimationOptions(rawValue: 1 << 0)
         public static let curveEaseIn = AnimationOptions(rawValue: 1 << 1)
         public static let curveEaseOut = AnimationOptions(rawValue: 1 << 2)

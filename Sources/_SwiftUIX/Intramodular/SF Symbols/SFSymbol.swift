@@ -1,10 +1,10 @@
 
 @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
 @_documentation(visibility: internal)
-public class SFSymbol: RawRepresentable, Equatable, Hashable {
+public class SFSymbol: RawRepresentable, Equatable, Hashable, @unchecked Sendable {
     public let rawValue: String
 
-    required public init(rawValue: String) {
+    public required init(rawValue: String) {
         self.rawValue = rawValue
     }
 

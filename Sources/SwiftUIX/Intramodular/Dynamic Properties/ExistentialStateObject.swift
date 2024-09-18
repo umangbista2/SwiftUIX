@@ -22,6 +22,7 @@ public struct ExistentialStateObject<ObjectType>: DynamicProperty {
     
     @StateObject private var valueBox: Box
     
+    @MainActor
     public var wrappedValue: ObjectType {
         get {
             valueBox.base

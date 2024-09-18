@@ -157,8 +157,8 @@ extension NSWindow.Level {
 #endif
 
 #if os(iOS) || os(macOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
-
-private var _isAnimatingAppKitOrUIKit: Bool = false
+// FIXME: Added nonisolated(unsafe)
+nonisolated(unsafe) private var _isAnimatingAppKitOrUIKit: Bool = false
 
 public func _withAppKitOrUIKitAnimation(
     _ animation: _AppKitOrUIKitViewAnimation? = .default,
@@ -208,7 +208,8 @@ extension EnvironmentValues {
     struct AppKitOrUIKitViewControllerBoxKey: EnvironmentKey {
         typealias Value = _SwiftUIX_ObservableWeakReferenceBox<AppKitOrUIKitViewController>?
         
-        static let defaultValue: Value = nil
+        // FIXME: nonisolated(unsafe) used
+        nonisolated(unsafe) static let defaultValue: Value = nil
     }
     
     var _appKitOrUIKitViewControllerBox: AppKitOrUIKitViewControllerBoxKey.Value {

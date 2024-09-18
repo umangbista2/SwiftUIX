@@ -5,6 +5,7 @@
 import Swift
 import SwiftUI
 
+@MainActor
 public protocol _ViewListMaker {
     func makeViewList() -> [AnyView]
 }

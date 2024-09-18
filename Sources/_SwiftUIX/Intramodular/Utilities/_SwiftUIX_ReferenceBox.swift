@@ -5,7 +5,7 @@
 import Swift
 
 @propertyWrapper
-class _SwiftUIX_ReferenceBox<T> {
+class _SwiftUIX_ReferenceBox<T>: @unchecked Sendable {
     var value: T
     
     var wrappedValue: T {

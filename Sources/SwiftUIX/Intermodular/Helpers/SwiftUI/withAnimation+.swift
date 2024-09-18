@@ -6,7 +6,8 @@ import Swift
 import SwiftUI
 
 @usableFromInline
-var _areAnimationsDisabledGlobally: Bool = false
+// FIXME: nonisolated(unsafe) used to pass concurrency checks, global variables cannot guarantee safety from data races
+nonisolated(unsafe) var _areAnimationsDisabledGlobally: Bool = false
 
 @_transparent
 public func _withoutAnimation<T>(
@@ -26,8 +27,9 @@ public func _withoutAnimation<T>(
     }
 }
 
+// FIXME: nonisolated(unsafe) used to pass concurrency checks, global variables cannot guarantee safety from data races
 @usableFromInline
-var _SwiftUIX_AppKitOrUIKitAnimationIsDisabled: Bool = false
+nonisolated(unsafe) var _SwiftUIX_AppKitOrUIKitAnimationIsDisabled: Bool = false
 
 public func _withoutAppKitOrUIKitAnimation<Result>(
     _ flag: Bool = true,
@@ -66,8 +68,9 @@ public func _withoutAppKitOrUIKitAnimation<Result>(
 
 #if canImport(QuartzCore) && !os(watchOS)
 extension CATransaction {
+    // FIXME: nonisolated(unsafe) used to pass concurrency checks, global variables cannot guarantee safety from data races
     @usableFromInline
-    static var _SwiftUIX_actionsAreDisabled: Bool = false
+    nonisolated(unsafe) static var _SwiftUIX_actionsAreDisabled: Bool = false
     
     @_transparent
     @MainActor

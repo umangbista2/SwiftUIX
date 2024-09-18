@@ -46,6 +46,7 @@ extension View {
     }
 }
 
+@MainActor
 public func withEnvironmentValue<T, Content: View>(
     _ keyPath: KeyPath<EnvironmentValues, T>,
     @ViewBuilder content: @escaping (T) -> Content

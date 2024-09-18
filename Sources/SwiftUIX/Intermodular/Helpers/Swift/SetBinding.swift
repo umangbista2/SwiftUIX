@@ -9,18 +9,18 @@ import SwiftUI
 @frozen
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct SetBinding<Value> {
+public struct SetBinding<Value: Sendable> : Sendable {
     @usableFromInline
-    let set: (Value) -> ()
+    let set: @Sendable (Value) -> ()
     
     @inlinable
-    public init(set: @escaping (Value) -> ()) {
+    public init(set: @Sendable @escaping (Value) -> ()) {
         self.set = set
     }
     
     @inlinable
     public init(_ binding: Binding<Value>) {
-        self.set = { binding.wrappedValue = $0 }
+        self.set = { @Sendable in binding.wrappedValue = $0 }
     }
     
     @inlinable
@@ -50,7 +50,7 @@ public struct SetBinding<Value> {
 
 extension Binding {
     @inlinable
-    public init(set: SetBinding<Value>, defaultValue: Value) {
+    public init(set: SetBinding<Value>, defaultValue: Value) where Value: Sendable {
         self.init(
             get: { defaultValue },
             set: { set.set($0) }

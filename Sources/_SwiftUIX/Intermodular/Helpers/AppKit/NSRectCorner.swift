@@ -8,7 +8,7 @@ import AppKit
 import SwiftUI
 
 @_documentation(visibility: internal)
-public struct NSRectCorner: OptionSet {
+public struct NSRectCorner: OptionSet, Sendable {
     public static let allCorners: Self = [.topLeft, .topRight, .bottomLeft, .bottomRight]
     
     public static let topLeft: Self = Self(rawValue: 1 << 0)

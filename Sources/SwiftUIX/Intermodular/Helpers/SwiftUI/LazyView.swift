@@ -309,7 +309,8 @@ extension EnvironmentValues {
     struct _LazyViewResolverKey: EnvironmentKey {
         typealias Value = any _LazyViewResolver
         
-        static let defaultValue: Value = _DefaultLazyViewResolver()
+        // FIXME: nonisolated(unsafe) added
+        nonisolated(unsafe) static let defaultValue: Value = _DefaultLazyViewResolver()
     }
     
     public var _lazyViewResolver: any _LazyViewResolver {

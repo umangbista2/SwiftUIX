@@ -12,6 +12,7 @@ extension EnvironmentObject {
         
         private let keyPath: KeyPath<ObjectType, Value>
         
+        @MainActor
         public var wrappedValue: Value {
             get {
                 base[keyPath: keyPath]
@@ -33,6 +34,7 @@ extension EnvironmentObject {
         
         private let keyPath: ReferenceWritableKeyPath<ObjectType, Value>
         
+        @MainActor
         public var wrappedValue: Value {
             get {
                 base[keyPath: keyPath]
@@ -41,6 +43,7 @@ extension EnvironmentObject {
             }
         }
         
+        @MainActor
         public var projectedValue: Binding<Value> {
             $base[dynamicMember: keyPath]
         }

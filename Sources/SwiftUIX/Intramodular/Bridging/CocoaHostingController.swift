@@ -319,6 +319,7 @@ extension CocoaHostingController {
 
 extension AppKitOrUIKitHostingController {
     /// https://twitter.com/b3ll/status/1193747288302075906
+    @MainActor
     public func _disableSafeAreaInsets() {
         #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
         guard let viewClass = object_getClass(view), !String(cString: class_getName(viewClass)).hasSuffix("_SwiftUIX_patched") else {

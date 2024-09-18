@@ -152,7 +152,7 @@ private final class Box<Base: MutableCollection>: AnyCollectionBox<Base.Element>
 // MARK: - Supplementary
 
 extension Binding {
-    public init<Data: MutableCollection & RandomAccessCollection>(
+    public init<Data: MutableCollection & RandomAccessCollection & Sendable>(
         _erasing data: Binding<Data>
     ) where Value == _AnyMutableRandomAccessCollection<Data.Element> {
         let typeErasedData = _SwiftUIX_ReferenceBox(wrappedValue: _AnyMutableRandomAccessCollection(data.wrappedValue))
@@ -169,10 +169,10 @@ extension Binding {
         )
     }
     
-    public init<Data: MutableCollection & RandomAccessCollection, TransformedElement>(
+    public init<Data: MutableCollection & RandomAccessCollection & Sendable, TransformedElement>(
         _erasing data: Binding<Data>,
-        transform: @escaping (Data.Element) -> TransformedElement,
-        backTransform: @escaping (TransformedElement) -> Data.Element
+        transform: @Sendable @escaping (Data.Element) -> TransformedElement,
+        backTransform: @Sendable @escaping (TransformedElement) -> Data.Element
     ) where Value == _AnyMutableRandomAccessCollection<TransformedElement> {
         let transformedData: _SwiftUIX_ReferenceBox<_LazyBidirectionalMapMutableRandomAccessCollection<Data, TransformedElement>> = .init(
             value: _LazyBidirectionalMapMutableRandomAccessCollection(

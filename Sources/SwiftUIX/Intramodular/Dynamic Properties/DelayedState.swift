@@ -8,7 +8,7 @@ import SwiftUI
 
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct DelayedState<Value>: DynamicProperty {
+public struct DelayedState<Value: Sendable>: DynamicProperty, Sendable {
     @inlinable
     @State public var _wrappedValue: Value
     

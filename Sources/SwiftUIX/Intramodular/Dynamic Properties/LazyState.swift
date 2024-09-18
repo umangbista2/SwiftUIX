@@ -8,8 +8,8 @@ import SwiftUI
 
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct LazyState<Value>: DynamicProperty {
-    private let initialWrappedValue: () -> Value
+public struct LazyState<Value: Sendable>: DynamicProperty, Sendable {
+    private let initialWrappedValue: @Sendable () -> Value
     
     private var _cachedWrappedValue: Value?
     
@@ -33,12 +33,12 @@ public struct LazyState<Value>: DynamicProperty {
     }
     
     /// Initialize with the provided initial value.
-    public init(initial: @escaping () -> Value) {
+    public init(initial: @Sendable @escaping () -> Value) {
         self.initialWrappedValue = initial
     }
     
     /// Initialize with the provided initial value.
-    public init(wrappedValue: @autoclosure @escaping () -> Value) {
+    public init(wrappedValue: @autoclosure @Sendable @escaping () -> Value) {
         self.init(initial: wrappedValue)
     }
 

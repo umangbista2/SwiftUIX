@@ -9,7 +9,7 @@ import SwiftUI
 @dynamicMemberLookup
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct ObservedValue<Value>: DynamicProperty {
+public struct ObservedValue<Value: Sendable>: DynamicProperty, Sendable {
     @PersistentObject var base: AnyObservableValue<Value>
     
     public var wrappedValue: Value {

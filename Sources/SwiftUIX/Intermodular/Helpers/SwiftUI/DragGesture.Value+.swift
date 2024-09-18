@@ -7,7 +7,7 @@ import SwiftUI
 
 @available(tvOS, unavailable)
 extension DragGesture.Value {
-    public struct Direction: OptionSet {
+    public struct Direction: OptionSet, Sendable {
         public static let top = Self(rawValue: 1 << 0)
         public static let left = Self(rawValue: 1 << 1)
         public static let bottom = Self(rawValue: 1 << 2)

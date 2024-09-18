@@ -27,7 +27,8 @@ struct _DynamicViewContentTraitValues {
 // MARK: - Auxiliary
 
 struct _DynamicViewContentTraitValuesEnvironmentKey: EnvironmentKey {
-    static let defaultValue = _DynamicViewContentTraitValues()
+    // FIXME: Added nonisolated(unsafe)
+    nonisolated(unsafe) static let defaultValue = _DynamicViewContentTraitValues()
 }
 
 extension EnvironmentValues {

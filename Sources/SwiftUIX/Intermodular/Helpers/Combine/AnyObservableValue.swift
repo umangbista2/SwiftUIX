@@ -8,7 +8,7 @@ import Swift
 /// An abstract base class for an observable value box.
 @dynamicMemberLookup
 @_documentation(visibility: internal)
-public class AnyObservableValue<Value>: _SwiftUIX_AnyIndirectValueBox, ObservableObject {
+public class AnyObservableValue<Value>: _SwiftUIX_AnyIndirectValueBox, Sendable, ObservableObject where Value: Sendable {
     public var wrappedValue: Value {
         get {
             fatalError() // abstract
@@ -37,7 +37,7 @@ public class AnyObservableValue<Value>: _SwiftUIX_AnyIndirectValueBox, Observabl
 }
 
 enum ObservableValues {
-    final class Root<Root>: AnyObservableValue<Root> {
+    final class Root<Root>: AnyObservableValue<Root> where Root: Sendable {
         public var root: Root
         
         private let _objectDidChange = PassthroughSubject<Void, Never>()

@@ -215,6 +215,7 @@ extension CGSize {
     }
 
     /// Whether the size contains a `AppKitOrUIKitView.noIntrinsicMetric` or an infinity.
+    @MainActor
     @_optimize(speed)
     @inline(__always)
     public var _hasUnspecifiedIntrinsicContentSizeDimensions: Bool {
@@ -225,6 +226,7 @@ extension CGSize {
         return false
     }
     
+    @MainActor
     @_optimize(speed)
     @inline(__always)
     func toAppKitOrUIKitIntrinsicContentSize() -> CGSize {
@@ -290,7 +292,7 @@ extension CGSize {
 // MARK: - Auxiliary
 
 #if os(iOS) || os(macOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
-enum _AppKitOrUIKitPlaceholderDimensionType {
+enum _AppKitOrUIKitPlaceholderDimensionType: Sendable {
     case intrinsicContentSize
     case textContainer
 }
@@ -319,6 +321,7 @@ extension CGFloat {
         }
     }
     
+    @MainActor
     func isPlaceholderDimension(for type: _AppKitOrUIKitPlaceholderDimensionType) -> Bool {
         switch type {
             case .intrinsicContentSize:

@@ -9,12 +9,14 @@ import SwiftUI
 
 @propertyWrapper
 @_documentation(visibility: internal)
-public struct EnvironmentObjectOrState<Value: ObservableObject>: DynamicProperty {
+public struct EnvironmentObjectOrState<Value: ObservableObject & Sendable>: DynamicProperty {
     @EnvironmentObject<Value>
     private var _wrappedValue0: Value
+    @MainActor
     @State
     private var _wrappedValue1: Value?
     
+    @MainActor
     public var wrappedValue: Value {
         get {
             _wrappedValue1 ?? _wrappedValue0
@@ -24,6 +26,7 @@ public struct EnvironmentObjectOrState<Value: ObservableObject>: DynamicProperty
     }
     
     /// The binding value, as "unwrapped" by accessing `$foo` on a `@Binding` property.
+    @MainActor
     public var projectedValue: Binding<Value> {
         return .init(
             get: { self.wrappedValue },

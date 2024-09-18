@@ -333,6 +333,7 @@ extension View {
 
 @usableFromInline
 protocol _opaque_FrameModifier {
+    @MainActor
     func dimensionsThatFit(in dimensions: OptionalDimensions) -> OptionalDimensions
 }
 
